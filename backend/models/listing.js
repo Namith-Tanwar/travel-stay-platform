@@ -7,11 +7,14 @@ const listingschema = new Schema({
         required: true,
     },
     description: String,
-    image : {
-        type: String,
-        default : "https://unsplash.com/photos/tokyo-tower-viewed-from-below-through-trees-j8Wo7cmoieY",
-        set : (v)=> v === "" ? "https://unsplash.com/photos/tokyo-tower-viewed-from-below-through-trees-j8Wo7cmoieY":v, 
+    image: {
+    filename: String,
+    url: {
+      type: String,
+      default:
+        "https://unsplash.com/photos/tokyo-tower-viewed-from-below-through-trees-j8Wo7cmoieY",
     },
+  },
     price : Number,
     location: String,
     country: String,
