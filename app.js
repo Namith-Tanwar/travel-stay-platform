@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const Listing = require("./models/listing");
 const path = require("path");
 const methodoverride = require("method-override");
+const ejsmate = require("ejs-mate");
 
 
 const MONGO_url = 'mongodb://127.0.0.1:27017/travelstay';
@@ -12,6 +13,8 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname , "views"));
 app.use(express.urlencoded({extended:true}));
 app.use(methodoverride("_method"));
+app.engine('ejs' , ejsmate);
+app.use(express.static(path.join(__dirname , "/public")))
 
 main().then(()=>{
     console.log("connected");

@@ -12,7 +12,7 @@ const listingschema = new Schema({
     url: {
       type: String,
       default:
-        "https://unsplash.com/photos/tokyo-tower-viewed-from-below-through-trees-j8Wo7cmoieY",
+        "https://images.unsplash.com/photo-1750764673942-11e683ec65b0?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTJ8fHxlbnwwfHx8fHw%3D",
     },
   },
     price : Number,
