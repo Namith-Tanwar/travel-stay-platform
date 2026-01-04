@@ -7,7 +7,8 @@ const methodoverride = require("method-override");
 const ejsmate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapasync");
 const ExpressError = require("./utils/ExpressError");
-const listingSchema = require("./schema");
+const {listingSchema ,reviewSchema} = require("./schema");
+const Review = require("./models/review");
 
 
 const MONGO_url = 'mongodb://127.0.0.1:27017/travelstay';
@@ -44,6 +45,16 @@ const validatelisting = (req , res, next)=>{
     next();
 }
 
+const validatereview = (req , res, next)=>{
+    let {error} = reviewSchema.validate(req.body); 
+    if (error) {
+        let errmsg = error.details.map((el) => el.message).join(",");
+        throw new ExpressError(400 ,errmsg)
+    }
+    next();
+}
+
+
 //index route 
 app.get("/listings" , wrapAsync(async(req,res)=>{
     const alllistings = await  Listing.find({});
@@ -58,7 +69,7 @@ app.get("/listings/new" , (req,res)=>{
 //show route
 app.get("/listings/:id" , wrapAsync(async(req , res)=>{
     let {id} = req.params;
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate("reviews");
     res.render("listings/show.ejs" , {listing});
 })
 );
@@ -96,6 +107,31 @@ app.delete("/listings/:id" , wrapAsync(async(req , res)=>{
     const deletedlisting = await Listing.findByIdAndDelete(id);
     console.log(deletedlisting);
     res.redirect("/listings")
+})
+);
+
+//post reviews route
+app.post("/listings/:id/reviews" , validatereview ,wrapAsync(async(req , res)=>{
+    let {id} = req.params;
+    let listing = await Listing.findById(id);
+    let newReview = new Review(req.body.review);
+
+    listing.reviews.push(newReview);
+    await newReview.save();
+    await listing.save();
+
+    console.log("new review saved");
+    res.redirect(`/listings/${listing._id}`);
+}));
+
+//delete review route
+
+app.delete("/listings/:id/reviews/:reviewId" , wrapAsync(async(req ,res)=>{
+    let {id , reviewId} = req.params;
+
+    await Listing.findByIdAndUpdate(id , {$pull :{ reviews:reviewId}});
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/listings/${id}`)
 })
 );
 
